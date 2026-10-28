@@ -136,7 +136,7 @@ func TestSendWarpMessage(t *testing.T) {
 	callData, err := corethwarp.PackSendWarpMessage(payload)
 	require.NoError(t, err, "corethwarp.PackSendWarpMessage(...)")
 	tx := wallet.SetNonceAndSign(t, 0, &types.DynamicFeeTx{
-		To:        &corethwarp.ContractAddress,
+		To:        &message.ContractAddress,
 		Gas:       1_000_000,
 		GasFeeCap: big.NewInt(1),
 		Data:      callData,
@@ -187,7 +187,7 @@ func warpAccessList(msgs ...*avalanchewarp.Message) types.AccessList {
 	al := make(types.AccessList, len(msgs))
 	for i, msg := range msgs {
 		al[i] = types.AccessTuple{
-			Address:     corethwarp.ContractAddress,
+			Address:     message.ContractAddress,
 			StorageKeys: message.Pack(msg.Bytes()),
 		}
 	}
@@ -205,7 +205,7 @@ func TestReceiveWarpMessage(t *testing.T) {
 	)
 	ctx, sut := newSUT(t,
 		withMaxAllocFor(wallet.Addresses()...),
-		withAccount(warpLogger, types.Account{Code: forwardAndLogCode(t, corethwarp.ContractAddress)}),
+		withAccount(warpLogger, types.Account{Code: forwardAndLogCode(t, message.ContractAddress)}),
 		withValidators(vdrs),
 	)
 
