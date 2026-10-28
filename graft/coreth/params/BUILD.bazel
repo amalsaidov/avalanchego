@@ -26,6 +26,7 @@ go_library(
         "//vms/evm/hook",
         "//vms/evm/imp/cchain/cparams",
         "@com_github_ava_labs_libevm//common",
+        "@com_github_ava_labs_libevm//core/types",
         "@com_github_ava_labs_libevm//core/vm",
         "@com_github_ava_labs_libevm//libevm",
         "@com_github_ava_labs_libevm//params",
