@@ -16,11 +16,11 @@ import (
 	"github.com/ava-labs/avalanchego/graft/coreth/precompile/contract"
 	"github.com/ava-labs/avalanchego/graft/coreth/precompile/contracts/warp"
 	"github.com/ava-labs/avalanchego/graft/evm/precompileconfig"
-	"github.com/ava-labs/avalanchego/graft/evm/predicate"
 	"github.com/ava-labs/avalanchego/snow"
 	"github.com/ava-labs/avalanchego/utils/set"
 	"github.com/ava-labs/avalanchego/vms/evm/hook"
 	"github.com/ava-labs/avalanchego/vms/evm/imp/cchain/cparams"
+	"github.com/ava-labs/avalanchego/vms/evm/imp/warp/message"
 
 	ethparams "github.com/ava-labs/libevm/params"
 )
@@ -67,11 +67,11 @@ func (RulesExtra) ShouldCreditBaseFeeToCoinbase() bool {
 // WarpMessages returns the storage keys of each Warp precompile entry in list,
 // in order. Each entry is one Warp message, including entries without storage
 // keys. It returns nil before Durango, when Warp is not active.
-func (r RulesExtra) WarpMessages(list types.AccessList) []predicate.Predicate {
+func (r RulesExtra) WarpMessages(list types.AccessList) []message.Packed {
 	if !r.IsDurango {
 		return nil
 	}
-	return predicate.FromAccessList(list, warp.ContractAddress)
+	return message.FromAccessList(list, warp.ContractAddress)
 }
 
 // AccessListGas computes the intrinsic gas for an access list. Once Warp is
@@ -85,7 +85,7 @@ func (r RulesExtra) AccessListGas(accessList libevm.AccessList) (uint64, bool, e
 	gas, err := precompileconfig.AccessListGas(
 		accessList,
 		warp.ContractAddress,
-		func(msg predicate.Predicate) (uint64, error) {
+		func(msg message.Packed) (uint64, error) {
 			return warp.PredicateGas(msg, cparams.Rules(r))
 		},
 	)
@@ -187,7 +187,7 @@ var _ contract.Environment = (*environment)(nil)
 
 type environment struct {
 	vm.PrecompileEnvironment
-	predicateResults predicate.BlockResults
+	predicateResults message.BlockResults
 	rules            *cparams.Rules
 }
 

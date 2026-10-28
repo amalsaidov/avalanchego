@@ -8,10 +8,10 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/ava-labs/avalanchego/graft/evm/predicate"
 	"github.com/ava-labs/avalanchego/utils/wrappers"
 	"github.com/ava-labs/avalanchego/vms/evm/imp/cchain/cparams"
 	"github.com/ava-labs/avalanchego/vms/evm/imp/dynamic"
+	"github.com/ava-labs/avalanchego/vms/evm/imp/warp/message"
 
 	ethtypes "github.com/ava-labs/libevm/core/types"
 )
@@ -26,7 +26,7 @@ const (
 // data. If the extra data does not contain predicate results, or cannot be
 // parsed, nil is returned. The same rules MUST be supplied for each call to a
 // given header.
-func PredicateResults(h *ethtypes.Header, rules cparams.Rules) predicate.BlockResults {
+func PredicateResults(h *ethtypes.Header, rules cparams.Rules) message.BlockResults {
 	predicateBytes := PredicateBytesFromExtra(rules, h.Extra)
 	if len(predicateBytes) == 0 {
 		return nil
@@ -38,7 +38,7 @@ func PredicateResults(h *ethtypes.Header, rules cparams.Rules) predicate.BlockRe
 	}
 
 	// results were already verified for canonical execution
-	results, _ := predicate.ParseBlockResults(predicateBytes)
+	results, _ := message.ParseBlockResults(predicateBytes)
 	cache.Store(&results)
 	return results
 }
